@@ -1,0 +1,1 @@
+"./ADC.obj" "./SSP_Deframing.obj" "./SSP_Framing.obj" "./UART.obj" "./headers.obj" "./main.obj" "../lnk_msp430g2553.cmd" -llibc.a 
