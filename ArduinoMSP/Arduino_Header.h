@@ -3,59 +3,59 @@
         // Amr Mamdouh
         // Mostafa el Gewily
 //Date: 12/9/2020
-//Description: this header file provieds a method to make a simplified UART protocol for Transmission
+//Description: this header file provides a method to make a simplified UART protocol for Transmission
 
 #pragma once
-#include <stdint.h> //to be removed after precombiled header being defined
-#include <string.h>
-#include <stdlib.h>
-#include <msp430.h>
-volatile char* Data;
-volatile char data_to_be_recieved ;
-volatile int Recieve_Ended;
-volatile int delimiter_State;
-volatile int first_flag;
-#define Flag 0xC0
-#define delimiter 0xF0
+
+#include "SSP_Framing.h"
+
+#include "SSP_Deframing.h"
+#include "Arduino.h"
+typedef enum Mode_of_Operation
+{
+INIT_MODE,
+InComm
+}Mode_of_Operation;
 
 //*****************************************************************************
 //
-// Prototypes for the UART Communication.
+// Prototypes for the Communication System Simulator.
 //
 //*****************************************************************************
 
-//! \brief initializes UART Communication.
+//! \brief initializes UART Communication and Bluetooth Communication.
 //!
 //! \return none.
 //
 //*****************************************************************************
 
-void Intialize_UART(void);
+void Intialize(void);
 //*****************************************************************************
 
-//! \brief Enables Receive Interrupt
+//! \brief Sends Initialization Request
 //! \return none .
 //
 //*****************************************************************************
-void Enable_INT_Recieve(void);
+void Send_Init(uint8_t Address);
 //*****************************************************************************
 
-//! \brief Transmits a Block
-//! \param Array of Characters.
+//! \brief Sends Ping
 //! none.
 //
 //*****************************************************************************
-void Transmit_UART(char* data);
+void Send_Ping(uint8_t Address);
 //*****************************************************************************
 
-//! \brief disables receive interrupt
+//! \brief Sends Get Telemetry request
 //! \return none.
 //
 //*****************************************************************************
-void Disable_INT_Recieve(void);
+void Send_Get_Telemetry(uint8_t Address);
 
-//! \brief receives Data
+//! \brief Receives a Frame
 //! \return character array.
 //
 //*****************************************************************************
-char* Recieve_Data(void);
+char* Recieve_Frame(void);
+
+

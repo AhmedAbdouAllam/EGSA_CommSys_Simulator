@@ -8,8 +8,7 @@ char* Get_Frame(uint8_t destinationAddress,uint8_t frameType,char* data)
 int dataLength=strlen(data);
 if(dataLength>256) return NULL;
 char* frame =(char*) malloc(Empty_Message_Size+dataLength+2);
-frame[0]='\0';
-int len = strlen(frame);
+int len =0;
 frame[len] = Flag;
 frame[len+1] = '\0';
 
@@ -26,7 +25,6 @@ frame[len] = frameType;
 frame[len+1] = '\0';
 
 len++;
-
 if(dataLength!=0)
 {
 frame[len] = dataLength;
@@ -40,6 +38,7 @@ frame[len+1] = '\0';
 
  }
 len = strlen(frame);
+
 
 frame[len] = Flag;
 frame[len+1] = '\0';

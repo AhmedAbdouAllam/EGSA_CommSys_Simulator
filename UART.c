@@ -16,6 +16,7 @@ void Intialize_UART(void)
     UCA0CTL1 &= ~UCSWRST;                     // **Initialize USCI state machine**
     Recieve_Ended=0;
     delimiter_State=0;
+    first_flag=1;
     Data=(char*) malloc(20);
 }
 
@@ -33,9 +34,15 @@ void Transmit_UART(char* data)
     for (i=0;i<length;i++)
     {
         while (!(IFG2&UCA0TXIFG)); // USCI_A0 TX buffer ready?
-        UCA0TXBUF = data[i];
+        if(data[i]!=0)
+            UCA0TXBUF = (uint8_t)data[i];
+        else
+            UCA0TXBUF = 0xC0;
 
     }
+//    while (!(IFG2&UCA0TXIFG)); // USCI_A0 TX buffer ready?
+//    UCA0TXBUF = 0xC0;
+
 
 
 }
@@ -53,7 +60,8 @@ char* Recieve_Data(void)
     Enable_INT_Recieve();
     Data[0]='\0';
     Recieve_Ended=0;
-
+    delimiter_State=0;
+    first_flag=1;
     while(Recieve_Ended==0)
     {}
 return Data;
@@ -66,19 +74,19 @@ __interrupt void USCI0RX_ISR(void)
   data_to_be_recieved = UCA0RXBUF;
   const char* Temp=Data;
   int length = strlen(Temp);
-  if(data_to_be_recieved==delimiter && delimiter_State==0)
+  if(data_to_be_recieved==delimiter && delimiter_State==0 && first_flag==0)
   {
 
       delimiter_State=1;
   }
-  else if(data_to_be_recieved==delimiter && delimiter_State==1)
+  else if(data_to_be_recieved==delimiter && delimiter_State==1 && first_flag==0)
   {
 
       delimiter_State=0;
       Data[length]=  data_to_be_recieved;
       Data[length+1]='\0';
   }
-  else if(data_to_be_recieved==Flag && delimiter_State==1)
+  else if(data_to_be_recieved==Flag && delimiter_State==1  && first_flag==0)
   {
 
       delimiter_State=0;
@@ -86,15 +94,21 @@ __interrupt void USCI0RX_ISR(void)
       Data[length+1]='\0';
 
   }
-  else if(data_to_be_recieved==Flag && delimiter_State==0)
+  else if(data_to_be_recieved==Flag && delimiter_State==0 && first_flag==0)
   {
       Data[length]=  data_to_be_recieved;
       Data[length+1]='\0';
       Recieve_Ended=1;
 
-      Disable_INT_Recieve();
+  //    Disable_INT_Recieve();
   }
-  else {
+  else if(data_to_be_recieved==Flag && delimiter_State==0 && first_flag==1)
+  {
+      Data[length]=  data_to_be_recieved;
+      Data[length+1]='\0';
+      first_flag=0;
+  }
+  else if(first_flag==0) {
       Data[length]=  data_to_be_recieved;
       Data[length+1]='\0';
 

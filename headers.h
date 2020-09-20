@@ -14,6 +14,11 @@
 
 #include "SSP_Deframing.h"
 
+typedef enum Mode_of_Operation
+{
+Not_intialized,
+In_Comm
+}Mode_of_Operation;
 
 //*****************************************************************************
 //
